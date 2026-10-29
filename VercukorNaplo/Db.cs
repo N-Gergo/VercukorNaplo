@@ -17,17 +17,13 @@ namespace VercukorNaplo
         public void OpenConnection()
         {
             if (con.State == ConnectionState.Closed)
-            {
                 con.Open();
-            }
         }
 
         public void CloseConnection()
         {
             if (con.State == ConnectionState.Open)
-            {
                 con.Close();
-            }
         }
 
         public void InitializeDatabase()
@@ -35,18 +31,14 @@ namespace VercukorNaplo
             bool ujAdatbazis = !File.Exists("vercukor.db");
 
             if (ujAdatbazis)
-            {
                 SQLiteConnection.CreateFile("vercukor.db");
-            }
 
             OpenConnection();
-
             CreateTables();
+            EnsureEmailColumn();
 
             if (ujAdatbazis)
-            {
                 CreateTestData();
-            }
 
             CloseConnection();
         }
@@ -57,6 +49,7 @@ namespace VercukorNaplo
 CREATE TABLE IF NOT EXISTS felhasznalok (
 id INTEGER PRIMARY KEY AUTOINCREMENT,
 felhasznalonev TEXT NOT NULL UNIQUE,
+email TEXT,
 jelszo TEXT NOT NULL,
 szerepkor TEXT NOT NULL
 );
@@ -92,30 +85,58 @@ olvasott INTEGER NOT NULL DEFAULT 0
             cmd.ExecuteNonQuery();
         }
 
+        private void EnsureEmailColumn()
+        {
+            bool vanEmail = false;
+
+            SQLiteCommand check = new SQLiteCommand("PRAGMA table_info(felhasznalok)", con);
+            SQLiteDataReader reader = check.ExecuteReader();
+
+            while (reader.Read())
+            {
+                if (reader["name"].ToString() == "email")
+                {
+                    vanEmail = true;
+                    break;
+                }
+            }
+
+            reader.Close();
+
+            if (!vanEmail)
+            {
+                SQLiteCommand alter = new SQLiteCommand("ALTER TABLE felhasznalok ADD COLUMN email TEXT", con);
+                alter.ExecuteNonQuery();
+            }
+
+            SQLiteCommand index = new SQLiteCommand("CREATE UNIQUE INDEX IF NOT EXISTS idx_felhasznalok_email ON felhasznalok(email) WHERE email IS NOT NULL AND TRIM(email) <> ''", con);
+            index.ExecuteNonQuery();
+        }
+
         private void CreateTestData()
         {
-            InsertUser("admin", "123456", "admin");
+            InsertUser("admin", "admin@example.com", "123456", "admin");
 
-            InsertUser("teszta1", "123456", "assistant");
-            InsertUser("teszta2", "123456", "assistant");
-            InsertUser("teszta3", "123456", "assistant");
+            InsertUser("teszta1", "teszta1@example.com", "123456", "assistant");
+            InsertUser("teszta2", "teszta2@example.com", "123456", "assistant");
+            InsertUser("teszta3", "teszta3@example.com", "123456", "assistant");
 
-            InsertUser("tesztd1", "123456", "doctor");
-            InsertUser("tesztd2", "123456", "doctor");
-            InsertUser("tesztd3", "123456", "doctor");
-            InsertUser("tesztd4", "123456", "doctor");
-            InsertUser("tesztd5", "123456", "doctor");
+            InsertUser("tesztd1", "tesztd1@example.com", "123456", "doctor");
+            InsertUser("tesztd2", "tesztd2@example.com", "123456", "doctor");
+            InsertUser("tesztd3", "tesztd3@example.com", "123456", "doctor");
+            InsertUser("tesztd4", "tesztd4@example.com", "123456", "doctor");
+            InsertUser("tesztd5", "tesztd5@example.com", "123456", "doctor");
 
-            int p1 = InsertUser("tesztp1", "123456", "user");
-            int p2 = InsertUser("tesztp2", "123456", "user");
-            int p3 = InsertUser("tesztp3", "123456", "user");
-            int p4 = InsertUser("tesztp4", "123456", "user");
-            int p5 = InsertUser("tesztp5", "123456", "user");
-            int p6 = InsertUser("tesztp6", "123456", "user");
-            int p7 = InsertUser("tesztp7", "123456", "user");
-            int p8 = InsertUser("tesztp8", "123456", "user");
-            int p9 = InsertUser("tesztp9", "123456", "user");
-            int p10 = InsertUser("tesztp10", "123456", "user");
+            int p1 = InsertUser("tesztp1", "tesztp1@example.com", "123456", "user");
+            int p2 = InsertUser("tesztp2", "tesztp2@example.com", "123456", "user");
+            int p3 = InsertUser("tesztp3", "tesztp3@example.com", "123456", "user");
+            int p4 = InsertUser("tesztp4", "tesztp4@example.com", "123456", "user");
+            int p5 = InsertUser("tesztp5", "tesztp5@example.com", "123456", "user");
+            int p6 = InsertUser("tesztp6", "tesztp6@example.com", "123456", "user");
+            int p7 = InsertUser("tesztp7", "tesztp7@example.com", "123456", "user");
+            int p8 = InsertUser("tesztp8", "tesztp8@example.com", "123456", "user");
+            int p9 = InsertUser("tesztp9", "tesztp9@example.com", "123456", "user");
+            int p10 = InsertUser("tesztp10", "tesztp10@example.com", "123456", "user");
 
             int[] patients = { p1, p2, p3, p4, p5, p6, p7, p8, p9, p10 };
 
@@ -128,14 +149,11 @@ olvasott INTEGER NOT NULL DEFAULT 0
             }
         }
 
-        private int InsertUser(string nev, string jelszo, string szerepkor)
+        private int InsertUser(string nev, string email, string jelszo, string szerepkor)
         {
-            SQLiteCommand cmd = new SQLiteCommand(
-                "INSERT INTO felhasznalok (felhasznalonev, jelszo, szerepkor) VALUES (@nev, @jelszo, @szerepkor); SELECT last_insert_rowid();",
-                con
-            );
-
+            SQLiteCommand cmd = new SQLiteCommand("INSERT INTO felhasznalok (felhasznalonev, email, jelszo, szerepkor) VALUES (@nev, @email, @jelszo, @szerepkor); SELECT last_insert_rowid();", con);
             cmd.Parameters.AddWithValue("@nev", nev);
+            cmd.Parameters.AddWithValue("@email", email);
             cmd.Parameters.AddWithValue("@jelszo", jelszo);
             cmd.Parameters.AddWithValue("@szerepkor", szerepkor);
 
@@ -144,11 +162,7 @@ olvasott INTEGER NOT NULL DEFAULT 0
 
         private void InsertMeres(int userId, string datum, string ido, double ertek, string napszak, double gyors, double bazis, double ch)
         {
-            SQLiteCommand cmd = new SQLiteCommand(
-                "INSERT INTO meresek (datum, ido, ertek, napszak, gyors_inzulin, bazis_inzulin, szenhidrat, felhasznalo_id) VALUES (@datum, @ido, @ertek, @napszak, @gyors, @bazis, @ch, @user)",
-                con
-            );
-
+            SQLiteCommand cmd = new SQLiteCommand("INSERT INTO meresek (datum, ido, ertek, napszak, gyors_inzulin, bazis_inzulin, szenhidrat, felhasznalo_id) VALUES (@datum, @ido, @ertek, @napszak, @gyors, @bazis, @ch, @user)", con);
             cmd.Parameters.AddWithValue("@datum", datum);
             cmd.Parameters.AddWithValue("@ido", ido);
             cmd.Parameters.AddWithValue("@ertek", ertek);
@@ -157,7 +171,6 @@ olvasott INTEGER NOT NULL DEFAULT 0
             cmd.Parameters.AddWithValue("@bazis", bazis);
             cmd.Parameters.AddWithValue("@ch", ch);
             cmd.Parameters.AddWithValue("@user", userId);
-
             cmd.ExecuteNonQuery();
         }
     }

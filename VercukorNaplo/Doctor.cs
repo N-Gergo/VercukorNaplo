@@ -89,7 +89,6 @@ namespace VercukorNaplo
         private void LoadChatPatients()
         {
             chatLoading = true;
-
             Db db = new Db();
 
             try
@@ -156,7 +155,6 @@ namespace VercukorNaplo
         private void LoadConversation(int patientId)
         {
             rtbChat.Clear();
-
             Db db = new Db();
 
             try
@@ -256,7 +254,6 @@ namespace VercukorNaplo
             }
 
             int patientId = Convert.ToInt32(cmbChatPatient.SelectedValue);
-
             Db db = new Db();
 
             try

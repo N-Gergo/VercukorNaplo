@@ -57,9 +57,15 @@
             txtMessage = new TextBox();
             rtbChat = new RichTextBox();
             lblChatDoctor = new Label();
+            label8 = new Label();
+            label9 = new Label();
+            cmbEv = new ComboBox();
+            cmbHonap = new ComboBox();
+            pnlDiagram = new Panel();
             ((System.ComponentModel.ISupportInitialize)dgvMeresek).BeginInit();
             ((System.ComponentModel.ISupportInitialize)chartVercukor).BeginInit();
             pnlChat.SuspendLayout();
+            pnlDiagram.SuspendLayout();
             SuspendLayout();
             // 
             // btnLogout
@@ -221,13 +227,13 @@
             chartVercukor.ChartAreas.Add(chartArea1);
             legend1.Name = "Legend1";
             chartVercukor.Legends.Add(legend1);
-            chartVercukor.Location = new Point(419, 454);
+            chartVercukor.Location = new Point(54, 3);
             chartVercukor.Name = "chartVercukor";
             series1.ChartArea = "ChartArea1";
             series1.Legend = "Legend1";
             series1.Name = "Series1";
             chartVercukor.Series.Add(series1);
-            chartVercukor.Size = new Size(790, 375);
+            chartVercukor.Size = new Size(1011, 418);
             chartVercukor.TabIndex = 23;
             chartVercukor.Text = "chart1";
             // 
@@ -301,14 +307,63 @@
             lblChatDoctor.TabIndex = 0;
             lblChatDoctor.TextAlign = ContentAlignment.TopCenter;
             // 
+            // label8
+            // 
+            label8.AutoSize = true;
+            label8.Font = new Font("Segoe UI", 12F);
+            label8.Location = new Point(437, 469);
+            label8.Name = "label8";
+            label8.Size = new Size(36, 28);
+            label8.TabIndex = 30;
+            label8.Text = "Év:";
+            // 
+            // label9
+            // 
+            label9.AutoSize = true;
+            label9.Font = new Font("Segoe UI", 12F);
+            label9.Location = new Point(654, 469);
+            label9.Name = "label9";
+            label9.Size = new Size(75, 28);
+            label9.TabIndex = 27;
+            label9.Text = "Hónap:";
+            // 
+            // cmbEv
+            // 
+            cmbEv.FormattingEnabled = true;
+            cmbEv.Location = new Point(479, 473);
+            cmbEv.Name = "cmbEv";
+            cmbEv.Size = new Size(151, 28);
+            cmbEv.TabIndex = 28;
+            // 
+            // cmbHonap
+            // 
+            cmbHonap.FormattingEnabled = true;
+            cmbHonap.Location = new Point(735, 473);
+            cmbHonap.Name = "cmbHonap";
+            cmbHonap.Size = new Size(151, 28);
+            cmbHonap.TabIndex = 31;
+            // 
+            // pnlDiagram
+            // 
+            pnlDiagram.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            pnlDiagram.Controls.Add(chartVercukor);
+            pnlDiagram.Location = new Point(185, 507);
+            pnlDiagram.Name = "pnlDiagram";
+            pnlDiagram.Size = new Size(1104, 424);
+            pnlDiagram.TabIndex = 32;
+            // 
             // User
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1902, 1033);
+            Controls.Add(pnlDiagram);
+            Controls.Add(cmbHonap);
+            Controls.Add(cmbEv);
+            Controls.Add(label9);
+            Controls.Add(label8);
             Controls.Add(pnlChat);
             Controls.Add(btnChat);
-            Controls.Add(chartVercukor);
             Controls.Add(lblDoctorName);
             Controls.Add(btnMentes);
             Controls.Add(dtptime);
@@ -329,11 +384,13 @@
             Controls.Add(btnLogout);
             Name = "User";
             Text = "User";
+           
             Load += User_Load;
             ((System.ComponentModel.ISupportInitialize)dgvMeresek).EndInit();
             ((System.ComponentModel.ISupportInitialize)chartVercukor).EndInit();
             pnlChat.ResumeLayout(false);
             pnlChat.PerformLayout();
+            pnlDiagram.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
         }
@@ -367,5 +424,10 @@
         private Label lblChatDoctor;
         private Button btnCloseChat;
         private Button btnSendMessage;
+        private Label label8;
+        private Label label9;
+        private ComboBox cmbEv;
+        private ComboBox cmbHonap;
+        private Panel pnlDiagram;
     }
 }

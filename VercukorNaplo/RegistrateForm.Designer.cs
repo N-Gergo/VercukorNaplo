@@ -36,6 +36,8 @@
             label2 = new Label();
             label3 = new Label();
             btnLogin = new Button();
+            label4 = new Label();
+            txtEmail = new TextBox();
             SuspendLayout();
             // 
             // btnRegister
@@ -57,7 +59,7 @@
             // 
             // txtPassword
             // 
-            txtPassword.Location = new Point(372, 140);
+            txtPassword.Location = new Point(372, 164);
             txtPassword.Name = "txtPassword";
             txtPassword.Size = new Size(125, 27);
             txtPassword.TabIndex = 2;
@@ -81,7 +83,7 @@
             // label2
             // 
             label2.AutoSize = true;
-            label2.Location = new Point(282, 147);
+            label2.Location = new Point(282, 171);
             label2.Name = "label2";
             label2.Size = new Size(51, 20);
             label2.TabIndex = 5;
@@ -106,11 +108,29 @@
             btnLogin.UseVisualStyleBackColor = true;
             btnLogin.Click += btnLogin_Click;
             // 
+            // label4
+            // 
+            label4.AutoSize = true;
+            label4.Location = new Point(282, 125);
+            label4.Name = "label4";
+            label4.Size = new Size(55, 20);
+            label4.TabIndex = 8;
+            label4.Text = "E-mail:";
+            // 
+            // txtEmail
+            // 
+            txtEmail.Location = new Point(372, 122);
+            txtEmail.Name = "txtEmail";
+            txtEmail.Size = new Size(125, 27);
+            txtEmail.TabIndex = 9;
+            // 
             // RegistrateForm
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(txtEmail);
+            Controls.Add(label4);
             Controls.Add(btnLogin);
             Controls.Add(label3);
             Controls.Add(label2);
@@ -135,5 +155,7 @@
         private Label label2;
         private Label label3;
         private Button btnLogin;
+        private Label label4;
+        private TextBox txtEmail;
     }
 }
