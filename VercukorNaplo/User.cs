@@ -12,22 +12,41 @@ namespace VercukorNaplo
         private int assignedDoctorId = 0;
         private bool diagramLoading = false;
 
+        private readonly Panel pnlAtlag = new Panel();
+        private readonly Panel pnlMinimum = new Panel();
+        private readonly Panel pnlMaximum = new Panel();
+        private readonly Label lblAtlag = new Label();
+        private readonly Label lblMinimum = new Label();
+        private readonly Label lblMaximum = new Label();
+
         private string[] honapNevek =
         {
             "Január", "Február", "Március", "Április", "Május", "Június",
             "Július", "Augusztus", "Szeptember", "Október", "November", "December"
         };
 
+        private bool kijelentkezes = false;
         public User()
         {
             InitializeComponent();
+            this.WindowState = FormWindowState.Maximized;
+            LetrehozStatisztikaKartyak();
             cmbEv.SelectedIndexChanged += cmbEv_SelectedIndexChanged;
             cmbHonap.SelectedIndexChanged += cmbHonap_SelectedIndexChanged;
             this.Resize += User_Resize;
+            this.FormClosing += User_FormClosing;
+        }
+
+        private void User_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (!kijelentkezes)
+                Application.Exit();
         }
 
         private void User_Load(object sender, EventArgs e)
         {
+            BeallitKinezet();
+
             cmbnapszak.Items.Clear();
             cmbnapszak.Items.Add("Éhgyomri");
             cmbnapszak.Items.Add("Étkezés előtt");
@@ -46,9 +65,170 @@ namespace VercukorNaplo
             pnlChat.Visible = false;
             rtbChat.ReadOnly = true;
             txtMessage.Multiline = true;
+            btnChat.Width = 145;
 
             LoadMeresek();
             LoadDiagramSzurok();
+            LoadAssignedDoctor();
+            FrissitOlvasatlanUzenetek();
+            MeretezdDiagramot();
+            MeretezdStatisztikaKartyak();
+        }
+
+        private void LetrehozStatisztikaKartyak()
+        {
+            Panel[] panelek = { pnlAtlag, pnlMinimum, pnlMaximum };
+            Label[] labelek = { lblAtlag, lblMinimum, lblMaximum };
+
+            foreach (Panel panel in panelek)
+            {
+                panel.Size = new Size(165, 44);
+                panel.BackColor = Color.White;
+                panel.BorderStyle = BorderStyle.None;
+                this.Controls.Add(panel);
+            }
+
+            foreach (Label label in labelek)
+            {
+                label.Dock = DockStyle.Fill;
+                label.TextAlign = ContentAlignment.MiddleCenter;
+                label.Font = new Font("Segoe UI", 9, FontStyle.Bold);
+            }
+
+            pnlAtlag.Controls.Add(lblAtlag);
+            pnlMinimum.Controls.Add(lblMinimum);
+            pnlMaximum.Controls.Add(lblMaximum);
+
+            lblAtlag.Text = "Havi átlag\n-";
+            lblMinimum.Text = "Minimum\n-";
+            lblMaximum.Text = "Maximum\n-";
+
+            pnlAtlag.BringToFront();
+            pnlMinimum.BringToFront();
+            pnlMaximum.BringToFront();
+        }
+
+        private void MeretezdStatisztikaKartyak()
+        {
+            int szelesseg = 165;
+            int tavolsag = 12;
+            int jobbMargo = 20;
+            int felsoPozicio = cmbEv.Top - 14;
+
+            pnlMaximum.Left = this.ClientSize.Width - jobbMargo - szelesseg;
+            pnlMinimum.Left = pnlMaximum.Left - tavolsag - szelesseg;
+            pnlAtlag.Left = pnlMinimum.Left - tavolsag - szelesseg;
+
+            pnlAtlag.Top = felsoPozicio;
+            pnlMinimum.Top = felsoPozicio;
+            pnlMaximum.Top = felsoPozicio;
+        }
+
+        private void BeallitKinezet()
+        {
+            Color kek = Color.FromArgb(47, 128, 237);
+            Color hatter = Color.FromArgb(244, 247, 250);
+            Color sotet = Color.FromArgb(45, 55, 72);
+
+            this.BackColor = hatter;
+            this.Font = new Font("Segoe UI", 10);
+            this.Text = "Vércukornapló";
+
+            Button[] gombok = { btnMentes, btnChat, btnLogout, btnSendMessage, btnCloseChat };
+
+            foreach (Button gomb in gombok)
+            {
+                gomb.BackColor = kek;
+                gomb.ForeColor = Color.White;
+                gomb.FlatStyle = FlatStyle.Flat;
+                gomb.FlatAppearance.BorderSize = 0;
+                gomb.Font = new Font("Segoe UI", 10, FontStyle.Bold);
+                gomb.Cursor = Cursors.Hand;
+            }
+
+            btnCloseChat.BackColor = Color.FromArgb(220, 53, 69);
+            btnCloseChat.ForeColor = Color.White;
+            btnCloseChat.FlatStyle = FlatStyle.Flat;
+            btnCloseChat.FlatAppearance.BorderSize = 0;
+
+            btnMentes.Height = 34;
+            btnChat.Height = 34;
+            btnLogout.Height = 34;
+            btnSendMessage.Height = 34;
+
+            TextBox[] mezok = { txtErtek, txtGyorsInzulin, txtBazisInzulin, txtSzenhidrat, txtMessage };
+
+            foreach (TextBox mezo in mezok)
+            {
+                mezo.BackColor = Color.White;
+                mezo.ForeColor = sotet;
+                mezo.BorderStyle = BorderStyle.FixedSingle;
+                mezo.Font = new Font("Segoe UI", 10);
+            }
+
+            cmbnapszak.BackColor = Color.White;
+            cmbnapszak.ForeColor = sotet;
+            cmbnapszak.FlatStyle = FlatStyle.Flat;
+            cmbnapszak.Font = new Font("Segoe UI", 10);
+
+            cmbEv.BackColor = Color.White;
+            cmbEv.ForeColor = sotet;
+            cmbEv.FlatStyle = FlatStyle.Flat;
+            cmbEv.Font = new Font("Segoe UI", 10);
+
+            cmbHonap.BackColor = Color.White;
+            cmbHonap.ForeColor = sotet;
+            cmbHonap.FlatStyle = FlatStyle.Flat;
+            cmbHonap.Font = new Font("Segoe UI", 10);
+
+            dtpdatum.Font = new Font("Segoe UI", 10);
+            dtptime.Font = new Font("Segoe UI", 10);
+
+            lblDoctorName.ForeColor = sotet;
+            lblDoctorName.Font = new Font("Segoe UI", 10, FontStyle.Bold);
+
+            lblAtlag.ForeColor = kek;
+            lblMinimum.ForeColor = kek;
+            lblMaximum.ForeColor = kek;
+
+            dgvMeresek.EnableHeadersVisualStyles = false;
+            dgvMeresek.BackgroundColor = Color.White;
+            dgvMeresek.BorderStyle = BorderStyle.None;
+            dgvMeresek.GridColor = Color.FromArgb(220, 225, 230);
+            dgvMeresek.ColumnHeadersDefaultCellStyle.BackColor = kek;
+            dgvMeresek.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
+            dgvMeresek.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 10, FontStyle.Bold);
+            dgvMeresek.ColumnHeadersDefaultCellStyle.SelectionBackColor = kek;
+            dgvMeresek.DefaultCellStyle.BackColor = Color.White;
+            dgvMeresek.DefaultCellStyle.ForeColor = sotet;
+            dgvMeresek.DefaultCellStyle.SelectionBackColor = Color.FromArgb(220, 235, 255);
+            dgvMeresek.DefaultCellStyle.SelectionForeColor = sotet;
+            dgvMeresek.RowHeadersVisible = false;
+            dgvMeresek.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dgvMeresek.MultiSelect = false;
+
+            pnlChat.BackColor = Color.White;
+            pnlChat.BorderStyle = BorderStyle.FixedSingle;
+            pnlChat.Width = 320;
+
+            btnCloseChat.Left = pnlChat.ClientSize.Width - btnCloseChat.Width - 4;
+            btnCloseChat.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+
+            rtbChat.Left = 3;
+            rtbChat.Width = pnlChat.ClientSize.Width - 6;
+            rtbChat.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            rtbChat.BackColor = Color.FromArgb(248, 250, 252);
+            rtbChat.ForeColor = sotet;
+            rtbChat.BorderStyle = BorderStyle.FixedSingle;
+            rtbChat.Font = new Font("Segoe UI", 10);
+
+            txtMessage.Left = 3;
+            txtMessage.Width = pnlChat.ClientSize.Width - 6;
+            txtMessage.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+
+            btnSendMessage.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+
+            chartVercukor.BackColor = Color.White;
         }
 
         private void MeretezdDiagramot()
@@ -63,7 +243,8 @@ namespace VercukorNaplo
                 chartVercukor.Dock = DockStyle.None;
                 chartVercukor.Left = 20;
                 chartVercukor.Width = Math.Max(100, this.ClientSize.Width - 40);
-                chartVercukor.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+                chartVercukor.Height = Math.Max(250, this.ClientSize.Height - chartVercukor.Top - 20);
+                chartVercukor.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             }
             else
             {
@@ -73,7 +254,8 @@ namespace VercukorNaplo
                 {
                     kontener.Left = 20;
                     kontener.Width = Math.Max(100, szulo.ClientSize.Width - 40);
-                    kontener.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+                    kontener.Height = Math.Max(250, szulo.ClientSize.Height - kontener.Top - 20);
+                    kontener.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
                 }
 
                 chartVercukor.Dock = DockStyle.Fill;
@@ -83,6 +265,90 @@ namespace VercukorNaplo
         private void User_Resize(object sender, EventArgs e)
         {
             MeretezdDiagramot();
+            MeretezdStatisztikaKartyak();
+        }
+
+        private void FrissitOlvasatlanUzenetek()
+        {
+            Db db = new Db();
+
+            try
+            {
+                db.OpenConnection();
+
+                SQLiteCommand cmd = new SQLiteCommand("SELECT COUNT(*) FROM uzenetek WHERE fogado_id=@id AND olvasott=0", db.GetConnection());
+                cmd.Parameters.AddWithValue("@id", LoggedUser.Id);
+
+                int olvasatlan = Convert.ToInt32(cmd.ExecuteScalar());
+
+                if (olvasatlan > 0)
+                    btnChat.Text = "Üzenetek (" + olvasatlan + " új)";
+                else
+                    btnChat.Text = "Üzenetek";
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Az üzenetek ellenőrzése sikertelen!\n" + ex.Message);
+            }
+            finally
+            {
+                db.CloseConnection();
+            }
+        }
+
+        private void FrissitHaviStatisztika()
+        {
+            if (cmbEv.SelectedItem == null || cmbHonap.SelectedItem == null)
+            {
+                lblAtlag.Text = "Havi átlag\n-";
+                lblMinimum.Text = "Minimum\n-";
+                lblMaximum.Text = "Maximum\n-";
+                return;
+            }
+
+            int ev = Convert.ToInt32(cmbEv.SelectedItem);
+            int honap = Convert.ToInt32(cmbHonap.SelectedItem.ToString().Substring(0, 2));
+
+            Db db = new Db();
+
+            try
+            {
+                db.OpenConnection();
+
+                SQLiteCommand cmd = new SQLiteCommand("SELECT AVG(ertek), MIN(ertek), MAX(ertek) FROM meresek WHERE felhasznalo_id=@userId AND substr(datum, 1, 4)=@ev AND substr(datum, 6, 2)=@honap", db.GetConnection());
+                cmd.Parameters.AddWithValue("@userId", LoggedUser.Id);
+                cmd.Parameters.AddWithValue("@ev", ev.ToString());
+                cmd.Parameters.AddWithValue("@honap", honap.ToString("00"));
+
+                SQLiteDataReader reader = cmd.ExecuteReader();
+
+                if (reader.Read() && !reader.IsDBNull(0))
+                {
+                    double atlag = Convert.ToDouble(reader[0]);
+                    double minimum = Convert.ToDouble(reader[1]);
+                    double maximum = Convert.ToDouble(reader[2]);
+
+                    lblAtlag.Text = "Havi átlag\n" + atlag.ToString("0.0") + " mmol/L";
+                    lblMinimum.Text = "Minimum\n" + minimum.ToString("0.0") + " mmol/L";
+                    lblMaximum.Text = "Maximum\n" + maximum.ToString("0.0") + " mmol/L";
+                }
+                else
+                {
+                    lblAtlag.Text = "Havi átlag\nNincs adat";
+                    lblMinimum.Text = "Minimum\nNincs adat";
+                    lblMaximum.Text = "Maximum\nNincs adat";
+                }
+
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("A statisztika betöltése sikertelen!\n" + ex.Message);
+            }
+            finally
+            {
+                db.CloseConnection();
+            }
         }
 
         private void LoadMeresek()
@@ -93,7 +359,7 @@ namespace VercukorNaplo
             {
                 db.OpenConnection();
 
-                SQLiteDataAdapter da = new SQLiteDataAdapter("SELECT id, datum, ido, ertek, napszak, gyors_inzulin, bazis_inzulin, szenhidrat FROM meresek WHERE felhasznalo_id = @id ORDER BY datum DESC, ido DESC", db.GetConnection());
+                SQLiteDataAdapter da = new SQLiteDataAdapter("SELECT id, datum, ido, ertek, napszak, gyors_inzulin, bazis_inzulin, szenhidrat FROM meresek WHERE felhasznalo_id=@id ORDER BY datum DESC, ido DESC", db.GetConnection());
                 da.SelectCommand.Parameters.AddWithValue("@id", LoggedUser.Id);
 
                 DataTable dt = new DataTable();
@@ -193,7 +459,7 @@ namespace VercukorNaplo
             {
                 db.OpenConnection();
 
-                SQLiteCommand cmd = new SQLiteCommand("SELECT f.id, f.felhasznalonev FROM doctor_patient dp JOIN felhasznalok f ON dp.doctor_id = f.id WHERE dp.patient_id = @pid AND f.szerepkor = 'doctor' LIMIT 1", db.GetConnection());
+                SQLiteCommand cmd = new SQLiteCommand("SELECT f.id, f.felhasznalonev FROM doctor_patient dp JOIN felhasznalok f ON dp.doctor_id=f.id WHERE dp.patient_id=@pid AND f.szerepkor='doctor' LIMIT 1", db.GetConnection());
                 cmd.Parameters.AddWithValue("@pid", LoggedUser.Id);
 
                 using (SQLiteDataReader reader = cmd.ExecuteReader())
@@ -202,7 +468,7 @@ namespace VercukorNaplo
                     {
                         assignedDoctorId = Convert.ToInt32(reader["id"]);
                         string doctorName = reader["felhasznalonev"].ToString() ?? "";
-                        lblDoctorName.Text = "Hozzárendelt orvos: Dr." + doctorName;
+                        lblDoctorName.Text = "Hozzárendelt orvos: Dr. " + doctorName;
                     }
                     else
                     {
@@ -233,7 +499,6 @@ namespace VercukorNaplo
                 cmd.Parameters.AddWithValue("@userId", LoggedUser.Id);
 
                 SQLiteDataReader reader = cmd.ExecuteReader();
-
                 cmbEv.Items.Clear();
 
                 while (reader.Read())
@@ -274,7 +539,6 @@ namespace VercukorNaplo
                 cmd.Parameters.AddWithValue("@ev", cmbEv.SelectedItem.ToString());
 
                 SQLiteDataReader reader = cmd.ExecuteReader();
-
                 cmbHonap.Items.Clear();
 
                 while (reader.Read())
@@ -330,32 +594,26 @@ namespace VercukorNaplo
 
                 ChartArea area = new ChartArea("MainArea");
                 area.BackColor = Color.White;
-
+                area.Position = new ElementPosition(3, 9, 94, 84);
+                area.InnerPlotPosition = new ElementPosition(7, 7, 91, 78);
                 area.AxisX.Title = ev + ". " + honapNevek[honap - 1];
                 area.AxisY.Title = "Vércukorszint (mmol/L)";
-
                 area.AxisX.TitleFont = new Font("Segoe UI", 12, FontStyle.Bold);
                 area.AxisY.TitleFont = new Font("Segoe UI", 12, FontStyle.Bold);
-
                 area.AxisX.LabelStyle.Font = new Font("Segoe UI", 10, FontStyle.Bold);
                 area.AxisY.LabelStyle.Font = new Font("Segoe UI", 10);
-
                 area.AxisX.IsLabelAutoFit = false;
                 area.AxisY.IsLabelAutoFit = false;
-
                 area.AxisX.LabelStyle.Format = "dd.";
                 area.AxisX.LabelStyle.Angle = 0;
                 area.AxisX.IntervalType = DateTimeIntervalType.Days;
                 area.AxisX.Interval = 1;
-
                 area.AxisX.MajorGrid.Enabled = false;
                 area.AxisY.MajorGrid.Enabled = true;
                 area.AxisY.MajorGrid.LineColor = Color.Gainsboro;
                 area.AxisY.MajorGrid.LineDashStyle = ChartDashStyle.Dash;
-
                 area.AxisX.LineColor = Color.Gray;
                 area.AxisY.LineColor = Color.Gray;
-
                 area.AxisX.MajorTickMark.LineColor = Color.Gray;
                 area.AxisY.MajorTickMark.LineColor = Color.Gray;
 
@@ -371,11 +629,11 @@ namespace VercukorNaplo
                 series.ChartType = SeriesChartType.Line;
                 series.XValueType = ChartValueType.DateTime;
                 series.BorderWidth = 3;
-                series.Color = Color.RoyalBlue;
+                series.Color = Color.FromArgb(47, 128, 237);
                 series.MarkerStyle = MarkerStyle.Circle;
                 series.MarkerSize = 10;
                 series.MarkerColor = Color.White;
-                series.MarkerBorderColor = Color.RoyalBlue;
+                series.MarkerBorderColor = Color.FromArgb(47, 128, 237);
                 series.MarkerBorderWidth = 2;
                 series.Font = new Font("Segoe UI", 10, FontStyle.Bold);
                 series.LabelForeColor = Color.Black;
@@ -411,7 +669,6 @@ namespace VercukorNaplo
                 }
 
                 reader.Close();
-
                 chartVercukor.Series.Add(series);
 
                 Title title = new Title("Vércukorszint alakulása");
@@ -451,6 +708,8 @@ namespace VercukorNaplo
             {
                 db.CloseConnection();
             }
+
+            FrissitHaviStatisztika();
         }
 
         private void cmbEv_SelectedIndexChanged(object sender, EventArgs e)
@@ -467,8 +726,6 @@ namespace VercukorNaplo
 
         private void btnChat_Click(object sender, EventArgs e)
         {
-            LoadAssignedDoctor();
-
             if (assignedDoctorId == 0)
             {
                 MessageBox.Show("Önhöz jelenleg nincs kezelőorvos hozzárendelve.");
@@ -541,6 +798,7 @@ namespace VercukorNaplo
 
             rtbChat.SelectionStart = rtbChat.Text.Length;
             rtbChat.ScrollToCaret();
+            FrissitOlvasatlanUzenetek();
         }
 
         private void btnSendMessage_Click(object sender, EventArgs e)
@@ -607,6 +865,8 @@ namespace VercukorNaplo
 
         private void btnLogout_Click(object sender, EventArgs e)
         {
+            kijelentkezes = true;
+
             LoginForm login = new LoginForm();
             login.Show();
             this.Close();

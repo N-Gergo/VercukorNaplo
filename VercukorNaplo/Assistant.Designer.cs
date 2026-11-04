@@ -41,6 +41,21 @@
             cmbPatientView = new ComboBox();
             cmbDoctorView = new ComboBox();
             dgvMeresek = new DataGridView();
+            btnMentes = new Button();
+            cmbnapszak = new ComboBox();
+            txtSzenhidrat = new TextBox();
+            txtBazisInzulin = new TextBox();
+            txtGyorsInzulin = new TextBox();
+            txtErtek = new TextBox();
+            dtptime = new DateTimePicker();
+            dtpdatum = new DateTimePicker();
+            label7 = new Label();
+            label6 = new Label();
+            label8 = new Label();
+            label9 = new Label();
+            label10 = new Label();
+            label11 = new Label();
+            label12 = new Label();
             ((System.ComponentModel.ISupportInitialize)dgvMeresek).BeginInit();
             SuspendLayout();
             // 
@@ -48,7 +63,7 @@
             // 
             btnLogout.Location = new Point(0, 0);
             btnLogout.Name = "btnLogout";
-            btnLogout.Size = new Size(106, 29);
+            btnLogout.Size = new Size(120, 29);
             btnLogout.TabIndex = 0;
             btnLogout.Text = "Kijelentkezés";
             btnLogout.UseVisualStyleBackColor = true;
@@ -57,7 +72,7 @@
             // cmbDoctorAssign
             // 
             cmbDoctorAssign.FormattingEnabled = true;
-            cmbDoctorAssign.Location = new Point(88, 423);
+            cmbDoctorAssign.Location = new Point(88, 457);
             cmbDoctorAssign.Name = "cmbDoctorAssign";
             cmbDoctorAssign.Size = new Size(151, 28);
             cmbDoctorAssign.TabIndex = 1;
@@ -65,7 +80,7 @@
             // cmbPatientAssign
             // 
             cmbPatientAssign.FormattingEnabled = true;
-            cmbPatientAssign.Location = new Point(88, 470);
+            cmbPatientAssign.Location = new Point(88, 504);
             cmbPatientAssign.Name = "cmbPatientAssign";
             cmbPatientAssign.Size = new Size(151, 28);
             cmbPatientAssign.TabIndex = 2;
@@ -73,7 +88,7 @@
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new Point(24, 423);
+            label1.Location = new Point(24, 457);
             label1.Name = "label1";
             label1.Size = new Size(50, 20);
             label1.TabIndex = 3;
@@ -82,7 +97,7 @@
             // label2
             // 
             label2.AutoSize = true;
-            label2.Location = new Point(24, 470);
+            label2.Location = new Point(24, 504);
             label2.Name = "label2";
             label2.Size = new Size(60, 20);
             label2.TabIndex = 4;
@@ -91,7 +106,7 @@
             // label3
             // 
             label3.AutoSize = true;
-            label3.Location = new Point(39, 391);
+            label3.Location = new Point(39, 425);
             label3.Name = "label3";
             label3.Size = new Size(167, 20);
             label3.TabIndex = 5;
@@ -99,7 +114,7 @@
             // 
             // btnHozzarendeles
             // 
-            btnHozzarendeles.Location = new Point(19, 519);
+            btnHozzarendeles.Location = new Point(19, 553);
             btnHozzarendeles.Name = "btnHozzarendeles";
             btnHozzarendeles.Size = new Size(125, 29);
             btnHozzarendeles.TabIndex = 6;
@@ -109,7 +124,7 @@
             // 
             // btnKapcsolatTorlese
             // 
-            btnKapcsolatTorlese.Location = new Point(150, 519);
+            btnKapcsolatTorlese.Location = new Point(150, 553);
             btnKapcsolatTorlese.Name = "btnKapcsolatTorlese";
             btnKapcsolatTorlese.Size = new Size(175, 29);
             btnKapcsolatTorlese.TabIndex = 7;
@@ -156,17 +171,158 @@
             // dgvMeresek
             // 
             dgvMeresek.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dgvMeresek.Location = new Point(12, 174);
+            dgvMeresek.Location = new Point(12, 208);
             dgvMeresek.Name = "dgvMeresek";
             dgvMeresek.RowHeadersWidth = 51;
             dgvMeresek.Size = new Size(968, 188);
             dgvMeresek.TabIndex = 12;
             // 
+            // btnMentes
+            // 
+            btnMentes.Location = new Point(912, 173);
+            btnMentes.Name = "btnMentes";
+            btnMentes.Size = new Size(94, 29);
+            btnMentes.TabIndex = 39;
+            btnMentes.Text = "Felvitel";
+            btnMentes.UseVisualStyleBackColor = true;
+            btnMentes.Click += btnMentes_Click;
+            // 
+            // cmbnapszak
+            // 
+            cmbnapszak.FormattingEnabled = true;
+            cmbnapszak.Location = new Point(755, 174);
+            cmbnapszak.Name = "cmbnapszak";
+            cmbnapszak.Size = new Size(151, 28);
+            cmbnapszak.TabIndex = 38;
+            // 
+            // txtSzenhidrat
+            // 
+            txtSzenhidrat.Location = new Point(624, 175);
+            txtSzenhidrat.Name = "txtSzenhidrat";
+            txtSzenhidrat.Size = new Size(125, 27);
+            txtSzenhidrat.TabIndex = 37;
+            // 
+            // txtBazisInzulin
+            // 
+            txtBazisInzulin.Location = new Point(493, 175);
+            txtBazisInzulin.Name = "txtBazisInzulin";
+            txtBazisInzulin.Size = new Size(125, 27);
+            txtBazisInzulin.TabIndex = 36;
+            // 
+            // txtGyorsInzulin
+            // 
+            txtGyorsInzulin.Location = new Point(362, 175);
+            txtGyorsInzulin.Name = "txtGyorsInzulin";
+            txtGyorsInzulin.Size = new Size(125, 27);
+            txtGyorsInzulin.TabIndex = 35;
+            // 
+            // txtErtek
+            // 
+            txtErtek.Location = new Point(228, 175);
+            txtErtek.Name = "txtErtek";
+            txtErtek.Size = new Size(125, 27);
+            txtErtek.TabIndex = 34;
+            // 
+            // dtptime
+            // 
+            dtptime.Format = DateTimePickerFormat.Time;
+            dtptime.Location = new Point(137, 175);
+            dtptime.Name = "dtptime";
+            dtptime.ShowUpDown = true;
+            dtptime.Size = new Size(84, 27);
+            dtptime.TabIndex = 33;
+            // 
+            // dtpdatum
+            // 
+            dtpdatum.Format = DateTimePickerFormat.Short;
+            dtpdatum.Location = new Point(16, 175);
+            dtpdatum.Name = "dtpdatum";
+            dtpdatum.Size = new Size(115, 27);
+            dtpdatum.TabIndex = 32;
+            // 
+            // label7
+            // 
+            label7.AutoSize = true;
+            label7.Location = new Point(781, 152);
+            label7.Name = "label7";
+            label7.Size = new Size(68, 20);
+            label7.TabIndex = 40;
+            label7.Text = "Napszak:";
+            // 
+            // label6
+            // 
+            label6.AutoSize = true;
+            label6.Location = new Point(646, 152);
+            label6.Name = "label6";
+            label6.Size = new Size(82, 20);
+            label6.TabIndex = 41;
+            label6.Text = "Szénhidrát:";
+            // 
+            // label8
+            // 
+            label8.AutoSize = true;
+            label8.Location = new Point(506, 152);
+            label8.Name = "label8";
+            label8.Size = new Size(95, 20);
+            label8.TabIndex = 42;
+            label8.Text = "Bázis_Inzulin:";
+            // 
+            // label9
+            // 
+            label9.AutoSize = true;
+            label9.Location = new Point(372, 152);
+            label9.Name = "label9";
+            label9.Size = new Size(98, 20);
+            label9.TabIndex = 43;
+            label9.Text = "Gyors_Inzulin:";
+            // 
+            // label10
+            // 
+            label10.AutoSize = true;
+            label10.Location = new Point(266, 152);
+            label10.Name = "label10";
+            label10.Size = new Size(45, 20);
+            label10.TabIndex = 44;
+            label10.Text = "Érték:";
+            // 
+            // label11
+            // 
+            label11.AutoSize = true;
+            label11.Location = new Point(166, 154);
+            label11.Name = "label11";
+            label11.Size = new Size(34, 20);
+            label11.TabIndex = 45;
+            label11.Text = "Idő:";
+            // 
+            // label12
+            // 
+            label12.AutoSize = true;
+            label12.Location = new Point(41, 152);
+            label12.Name = "label12";
+            label12.Size = new Size(57, 20);
+            label12.TabIndex = 46;
+            label12.Text = "Dátum:";
+            // 
             // Assistant
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1115, 590);
+            ClientSize = new Size(1258, 590);
+            Controls.Add(btnMentes);
+            Controls.Add(cmbnapszak);
+            Controls.Add(txtSzenhidrat);
+            Controls.Add(txtBazisInzulin);
+            Controls.Add(txtGyorsInzulin);
+            Controls.Add(txtErtek);
+            Controls.Add(dtptime);
+            Controls.Add(dtpdatum);
+            Controls.Add(label7);
+            Controls.Add(label6);
+            Controls.Add(label8);
+            Controls.Add(label9);
+            Controls.Add(label10);
+            Controls.Add(label11);
+            Controls.Add(label12);
             Controls.Add(dgvMeresek);
             Controls.Add(label4);
             Controls.Add(label5);
@@ -203,5 +359,20 @@
         private ComboBox cmbPatientView;
         private ComboBox cmbDoctorView;
         private DataGridView dgvMeresek;
+        private Button btnMentes;
+        private ComboBox cmbnapszak;
+        private TextBox txtSzenhidrat;
+        private TextBox txtBazisInzulin;
+        private TextBox txtGyorsInzulin;
+        private TextBox txtErtek;
+        private DateTimePicker dtptime;
+        private DateTimePicker dtpdatum;
+        private Label label7;
+        private Label label6;
+        private Label label8;
+        private Label label9;
+        private Label label10;
+        private Label label11;
+        private Label label12;
     }
 }

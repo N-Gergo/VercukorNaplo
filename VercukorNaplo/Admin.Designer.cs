@@ -100,7 +100,7 @@
             // 
             // txtSzuresNev
             // 
-            txtSzuresNev.Location = new Point(168, 166);
+            txtSzuresNev.Location = new Point(199, 166);
             txtSzuresNev.Name = "txtSzuresNev";
             txtSzuresNev.Size = new Size(125, 27);
             txtSzuresNev.TabIndex = 6;
