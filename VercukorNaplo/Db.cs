@@ -142,10 +142,26 @@ olvasott INTEGER NOT NULL DEFAULT 0
 
             for (int i = 0; i < patients.Length; i++)
             {
-                InsertMeres(patients[i], DateTime.Today.AddDays(-3).ToString("yyyy-MM-dd"), "07:30", 5.1 + i * 0.1, "Éhgyomri", 0, 0, 25);
-                InsertMeres(patients[i], DateTime.Today.AddDays(-2).ToString("yyyy-MM-dd"), "12:00", 6.2 + i * 0.1, "Étkezés előtt", 4, 0, 50);
-                InsertMeres(patients[i], DateTime.Today.AddDays(-1).ToString("yyyy-MM-dd"), "14:00", 7.4 + i * 0.1, "Étkezés után", 5, 0, 60);
-                InsertMeres(patients[i], DateTime.Today.ToString("yyyy-MM-dd"), "21:00", 6.5 + i * 0.1, "Lefekvés előtt", 0, 12, 20);
+                double elteres = i * 0.03;
+
+                InsertMeres(patients[i], "2026-10-02", "07:30", 5.2 + elteres, "Éhgyomri", 0, 0, 25);
+                InsertMeres(patients[i], "2026-10-05", "12:00", 3.5 + elteres, "Étkezés előtt", 0, 0, 40);
+                InsertMeres(patients[i], "2026-10-08", "14:00", 9.7 + elteres, "Étkezés után", 5, 0, 60);
+                InsertMeres(patients[i], "2026-10-11", "21:00", 6.4 + elteres, "Lefekvés előtt", 0, 12, 20);
+
+                InsertMeres(patients[i], "2026-10-15", "06:30", 5.1 + elteres, "Éhgyomri", 0, 0, 20);
+                InsertMeres(patients[i], "2026-10-15", "08:30", 3.7 + elteres, "Étkezés előtt", 0, 0, 30);
+                InsertMeres(patients[i], "2026-10-15", "10:30", 6.8 + elteres, "Étkezés után", 4, 0, 45);
+                InsertMeres(patients[i], "2026-10-15", "12:30", 8.2 + elteres, "Étkezés előtt", 4, 0, 50);
+                InsertMeres(patients[i], "2026-10-15", "14:30", 10.6 + elteres, "Étkezés után", 5, 0, 65);
+                InsertMeres(patients[i], "2026-10-15", "17:30", 7.1 + elteres, "Egyéb", 0, 0, 20);
+                InsertMeres(patients[i], "2026-10-15", "20:00", 9.4 + elteres, "Étkezés után", 4, 0, 55);
+                InsertMeres(patients[i], "2026-10-15", "22:30", 4.3 + elteres, "Lefekvés előtt", 0, 12, 15);
+
+                InsertMeres(patients[i], "2026-10-19", "07:15", 3.4 + elteres, "Éhgyomri", 0, 0, 20);
+                InsertMeres(patients[i], "2026-10-22", "13:30", 11.2 + elteres, "Étkezés után", 6, 0, 70);
+                InsertMeres(patients[i], "2026-10-26", "18:00", 5.9 + elteres, "Étkezés előtt", 3, 0, 40);
+                InsertMeres(patients[i], "2026-10-30", "21:30", 6.7 + elteres, "Lefekvés előtt", 0, 12, 20);
             }
         }
 

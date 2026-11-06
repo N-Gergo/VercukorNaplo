@@ -13,6 +13,8 @@ namespace VercukorNaplo
         private bool chatLoading = false;
         private bool patientLoading = false;
         private bool diagramLoading = false;
+        private const double AlacsonyHatar = 4.0;
+        private const double MagasHatar = 9.0;
 
         private readonly Panel pnlAtlag = new Panel();
         private readonly Panel pnlMinimum = new Panel();
@@ -378,6 +380,31 @@ namespace VercukorNaplo
 
             if (dgvmeresek.Columns.Contains("napszak"))
                 dgvmeresek.Columns["napszak"].DisplayIndex = 6;
+
+            FrissitMeresJelzes();
+        }
+
+        private void FrissitMeresJelzes()
+        {
+            foreach (DataGridViewRow row in dgvmeresek.Rows)
+            {
+                if (row.IsNewRow || row.Cells["ertek"].Value == null)
+                    continue;
+
+                if (!double.TryParse(row.Cells["ertek"].Value.ToString(), out double ertek))
+                    continue;
+
+                row.Cells["ertek"].Style.BackColor = Color.White;
+                row.Cells["ertek"].Style.ForeColor = Color.FromArgb(45, 55, 72);
+                row.Cells["ertek"].Style.Font = new Font("Segoe UI", 10);
+
+                if (ertek < AlacsonyHatar || ertek > MagasHatar)
+                {
+                    row.Cells["ertek"].Style.BackColor = Color.MistyRose;
+                    row.Cells["ertek"].Style.ForeColor = Color.FromArgb(180, 40, 40);
+                    row.Cells["ertek"].Style.Font = new Font("Segoe UI", 10, FontStyle.Bold);
+                }
+            }
         }
 
         private bool TryParseSzam(string text, out double value)
@@ -628,6 +655,10 @@ namespace VercukorNaplo
                 area.AxisY.MajorGrid.Enabled = true;
                 area.AxisY.MajorGrid.LineColor = Color.Gainsboro;
                 area.AxisY.MajorGrid.LineDashStyle = ChartDashStyle.Dash;
+                area.AxisX.LineColor = Color.Gray;
+                area.AxisY.LineColor = Color.Gray;
+                area.AxisX.MajorTickMark.LineColor = Color.Gray;
+                area.AxisY.MajorTickMark.LineColor = Color.Gray;
 
                 DateTime honapEleje = new DateTime(ev, honap, 1);
                 DateTime kovetkezoHonap = honapEleje.AddMonths(1);
@@ -651,8 +682,7 @@ namespace VercukorNaplo
                 series.LabelForeColor = Color.Black;
                 series.SmartLabelStyle.Enabled = true;
 
-                double minErtek = double.MaxValue;
-                double maxErtek = double.MinValue;
+                double maxErtek = 0;
 
                 while (reader.Read())
                 {
@@ -665,23 +695,44 @@ namespace VercukorNaplo
                     if (!DateTime.TryParse(datum + " " + ido, out DateTime datumIdo))
                         continue;
 
+                    string allapot = "Normál";
+
+                    if (ertek < AlacsonyHatar)
+                        allapot = "Alacsony";
+                    else if (ertek > MagasHatar)
+                        allapot = "Magas";
+
                     DataPoint point = new DataPoint();
                     point.XValue = datumIdo.ToOADate();
                     point.YValues = new double[] { ertek };
-                    point.Label = ertek.ToString("0.0");
-                    point.ToolTip = datumIdo.ToString("yyyy.MM.dd. HH:mm") + "\n" + ertek.ToString("0.0") + " mmol/L";
+
+                    if (ertek < AlacsonyHatar || ertek > MagasHatar)
+                        point.Label = ertek.ToString("0.0");
+                    else
+                        point.Label = "";
+
+                    point.ToolTip = datumIdo.ToString("yyyy.MM.dd. HH:mm") + "\n" + ertek.ToString("0.0") + " mmol/L\n" + allapot;
+
+                    if (ertek < AlacsonyHatar || ertek > MagasHatar)
+                    {
+                        point.MarkerColor = Color.MistyRose;
+                        point.MarkerBorderColor = Color.FromArgb(220, 53, 69);
+                        point.MarkerBorderWidth = 3;
+                        point.LabelForeColor = Color.FromArgb(180, 40, 40);
+                    }
+                    else
+                    {
+                        point.MarkerColor = Color.White;
+                        point.MarkerBorderColor = Color.FromArgb(47, 128, 237);
+                    }
 
                     series.Points.Add(point);
-
-                    if (ertek < minErtek)
-                        minErtek = ertek;
 
                     if (ertek > maxErtek)
                         maxErtek = ertek;
                 }
 
                 reader.Close();
-
                 chartVercukor.Series.Add(series);
 
                 string patientName = cmbPatient.Text;
@@ -691,24 +742,38 @@ namespace VercukorNaplo
                 title.ForeColor = Color.Black;
                 chartVercukor.Titles.Add(title);
 
-                if (series.Points.Count > 0)
-                {
-                    area.AxisY.Minimum = Math.Max(0, Math.Floor(minErtek - 1));
-                    area.AxisY.Maximum = Math.Ceiling(maxErtek + 1);
-                    area.AxisY.Interval = 1;
+                area.AxisY.Minimum = 0;
+                area.AxisY.Maximum = Math.Max(10, Math.Ceiling(maxErtek + 1));
+                area.AxisY.Interval = 1;
 
-                    if (series.Points.Count > 25)
-                    {
-                        foreach (DataPoint point in series.Points)
-                            point.Label = "";
-                    }
-                }
-                else
-                {
-                    area.AxisY.Minimum = 0;
-                    area.AxisY.Maximum = 10;
-                    area.AxisY.Interval = 1;
+                StripLine alsoSav = new StripLine();
+                alsoSav.IntervalOffset = 0;
+                alsoSav.StripWidth = AlacsonyHatar;
+                alsoSav.BackColor = Color.FromArgb(35, 220, 53, 69);
+                area.AxisY.StripLines.Add(alsoSav);
 
+                StripLine felsoSav = new StripLine();
+                felsoSav.IntervalOffset = MagasHatar;
+                felsoSav.StripWidth = area.AxisY.Maximum - MagasHatar;
+                felsoSav.BackColor = Color.FromArgb(35, 220, 53, 69);
+                area.AxisY.StripLines.Add(felsoSav);
+
+                StripLine alsoHatar = new StripLine();
+                alsoHatar.IntervalOffset = AlacsonyHatar;
+                alsoHatar.BorderColor = Color.FromArgb(180, 220, 53, 69);
+                alsoHatar.BorderWidth = 2;
+                alsoHatar.BorderDashStyle = ChartDashStyle.Dash;
+                area.AxisY.StripLines.Add(alsoHatar);
+
+                StripLine felsoHatar = new StripLine();
+                felsoHatar.IntervalOffset = MagasHatar;
+                felsoHatar.BorderColor = Color.FromArgb(180, 220, 53, 69);
+                felsoHatar.BorderWidth = 2;
+                felsoHatar.BorderDashStyle = ChartDashStyle.Dash;
+                area.AxisY.StripLines.Add(felsoHatar);
+
+                if (series.Points.Count == 0)
+                {
                     Title nincsAdat = new Title("Ebben a hónapban nincs mérési adat");
                     nincsAdat.Font = new Font("Segoe UI", 11, FontStyle.Italic);
                     nincsAdat.ForeColor = Color.Gray;

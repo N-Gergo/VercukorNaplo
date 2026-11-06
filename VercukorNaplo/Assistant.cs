@@ -10,6 +10,8 @@ namespace VercukorNaplo
     public partial class Assistant : Form
     {
         private bool isLoading = false;
+        private const double AlacsonyHatar = 4.0;
+        private const double MagasHatar = 9.0;
 
         public Assistant()
         {
@@ -374,7 +376,31 @@ namespace VercukorNaplo
                 db.CloseConnection();
             }
 
+            FrissitMeresJelzes();
             MeretezdElrendezes();
+        }
+
+        private void FrissitMeresJelzes()
+        {
+            foreach (DataGridViewRow row in dgvMeresek.Rows)
+            {
+                if (row.IsNewRow || row.Cells["ertek"].Value == null)
+                    continue;
+
+                if (!double.TryParse(row.Cells["ertek"].Value.ToString(), out double ertek))
+                    continue;
+
+                row.Cells["ertek"].Style.BackColor = Color.White;
+                row.Cells["ertek"].Style.ForeColor = Color.FromArgb(45, 55, 72);
+                row.Cells["ertek"].Style.Font = new Font("Segoe UI", 10);
+
+                if (ertek < AlacsonyHatar || ertek > MagasHatar)
+                {
+                    row.Cells["ertek"].Style.BackColor = Color.MistyRose;
+                    row.Cells["ertek"].Style.ForeColor = Color.FromArgb(180, 40, 40);
+                    row.Cells["ertek"].Style.Font = new Font("Segoe UI", 10, FontStyle.Bold);
+                }
+            }
         }
 
         private bool TryParseSzam(string text, out double value)
